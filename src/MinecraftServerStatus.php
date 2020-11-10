@@ -45,26 +45,7 @@ class MinecraftServerStatus {
         $data = strstr($data, '{');
         $data = json_decode($data);
         
-        $descriptionRaw = isset($data->description) ? $data->description : false;
-        $description = $descriptionRaw;
-        
-        // colorize the description if it is supported
-        if (gettype($descriptionRaw) == 'object') {
-            $description = '';
-            
-            if (isset($descriptionRaw->text)) {
-                $color = isset($descriptionRaw->color) ? $descriptionRaw->color : '';
-                $description = '<font color="' . $color . '">' . $descriptionRaw->text . '</font>';
-            }
-            
-            if (isset($descriptionRaw->extra)) {
-                foreach ($descriptionRaw->extra as $item) {
-                    $description .= isset($item->bold) && $item->bold ? '<b>' : '';
-                    $description .= isset($item->color) ? '<font color="' . $item->color . '">' . $item->text . '</font>' : '';
-                    $description .= isset($item->bold) && $item->bold ? '</b>' : '';
-                }
-            }
-        }
+		$description = $data->description->extra[0]->text;
         
         return array(
                 'hostname' => $host,
@@ -75,7 +56,6 @@ class MinecraftServerStatus {
                 'players' => isset($data->players->online) ? $data->players->online : false,
                 'max_players' => isset($data->players->max) ? $data->players->max : false,
                 'description' => $description,
-                'description_raw' => $descriptionRaw,
                 'favicon' => isset($data->favicon) ? $data->favicon : false,
                 'modinfo' => isset($data->modinfo) ? $data->modinfo : false
         );
